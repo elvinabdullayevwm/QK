@@ -102,7 +102,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOIyS4ubx-uDQR9LNP-Tl8-mYuqhUaHWQRWzvknyT0QVGK8qEOzrbwC2NdNVExcQSe0A/exec";
+        const SCRIPT_URL = "BURAYA_YENI_DEPLOY_LINKINI_YAZ";
         let currentMuellim = {};
         let currentLesson = {};
         let studentsData = [];
@@ -143,18 +143,11 @@
                     return;
                 }
                 res.data.forEach(d => {
-                    let cleanSaat = d.saat;
-                    if(cleanSaat.includes("T")) {
-                        let timePart = cleanSaat.split("T")[1];
-                        cleanSaat = timePart.substring(0, 5);
-                    }
-                    d.saat = cleanSaat;
-
                     container.innerHTML += `
                         <div class="col-md-4 mb-3">
                             <div class="card p-3 shadow-sm border-primary">
                                 <h5>Fənn: ${d.fenn}</h5>
-                                <p class="mb-1"><b>Saat:</b> ${cleanSaat}</p>
+                                <p class="mb-1"><b>Saat:</b> ${d.saat}</p>
                                 <button class="btn btn-outline-primary btn-sm mt-2" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
                             </div>
                         </div>
