@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurs İdarəetmə Paneli - Müəllim</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5" id="app">
+        <!-- GİRİŞ EKRANI -->
+        <div class="row justify-content-center" id="loginScreen">
+            <div class="col-md-4">
+                <div class="card shadow p-4">
+                    <h3 class="text-center mb-3">Müəllim Girişi</h3>
+                    <div class="mb-3">
+                        <label>Login</label>
+                        <input type="text" id="loginInput" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>Parol</label>
+                        <input type="password" id="parolInput" class="form-control">
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="login()">Daxil ol</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DƏRSLƏRİM EKRANI -->
+        <div id="dashboardScreen" style="display:none;">
+            <h2>Xoş gəldiniz, <span id="muellimAdi"></span> (<span id="muellimFenn"></span>)</h2>
+            <hr>
+            <div class="mb-3">
+                <label><b>Gün Tipini Seçin:</b></label>
+                <select id="gunTipiSelect" class="form-select w-25 d-inline-block ms-2" onchange="reloadSchedule()">
+                    <option value="Tək">Tək günlər</option>
+                    <option value="Cüt">Cüt günlər</option>
+                </select>
+            </div>
+            <h4>Cədvəl / Dərslərim</h4>
+            <div id="scheduleList" class="row mt-3"></div>
+        </div>
+
+        <!-- MULTİ-STEP DƏRS İDARƏETMƏSİ -->
+        <div id="lessonScreen" style="display:none;">
+            <div class="card shadow p-4">
+                <h4 id="activeGroupTitle" class="text-primary mb-3"></h4>
+                
+                <!-- Addım 1: Davamiyyət -->
+                <div class="step active" id="step1">
+                    <h5>Addım 1: Davamiyyət</h5>
+                    <div id="studentsAttendanceList" class="my-3"></div>
+                    <button class="btn btn-secondary" onclick="backToDashboard()">Geri (Cədvələ qayıt)</button>
+                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Ev Tapşırığı)</button>
+                </div>
+
+                <!-- Addım 2: Ev Tapşırığı -->
+                <div class="step" id="step2">
+                    <h5>Addım 2: Ev Tapşırığının Hazırlıq Durumu</h5>
+                    <div class="mb-3"><label>Evə verilən mövzu</label><input type="text" id="evMovzu" class="form-control"></div>
+                    <div class="mb-3"><label>Evə verilən test sayı</label><input type="number" id="verilenTest" class="form-control"></div>
+                    <div class="mb-3"><label>Yazılmış test sayı</label><input type="number" id="yazilanTest" class="form-control"></div>
+                    <div class="mb-3"><label>Düz çıxan testlərin sayı</label><input type="number" id="duzTest" class="form-control"></div>
+                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
+                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Sual-Cavab)</button>
+                </div>
+
+                <!-- Addım 3: Sual-Cavab -->
+                <div class="step" id="step3">
+                    <h5>Addım 3: Sual-Cavab Aktivliyi</h5>
+                    <div id="studentsActivityList" class="my-3"></div>
+                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
+                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Test Nəticələri)</button>
+                </div>
+
+                <!-- Addım 4: Test Nəticələri -->
+                <div class="step" id="step4">
+                    <h5>Addım 4: Test Nəticələri və Növbəti Dərs</h5>
+                    <div class="mb-3">
+                        <label>Testin Növü</label>
+                        <select id="testNovu" class="form-select">
+                            <option value="Quiz">Quiz</option>
+                            <option value="Diaqnostik">Diaqnostik</option>
+                            <option value="Sınaq">Sınaq</option>
+                        </select>
+                    </div>
+                    <div class="mb-3"><label>Əhatə etdiyi mövzular</label><input type="text" id="testMovzulari" class="form-control"></div>
+                    <div class="mb-3"><label>Növbəti dərsə ev tapşırığı / mövzu</label><input type="text" id="novbetiMovzu" class="form-control"></div>
+                    <div class="mb-3"><label>Ümumi Qeyd / Şərh</label><textarea id="qeyd" class="form-control"></textarea></div>
+                    
+                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
+                    <button class="btn btn-success" onclick="finishLesson()">Dərsi Bitir və Yadda Saxla</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwh86ihzxbp7Z8WRgUv9l8OFBwF09Y6_oyU-K4yhMPhqBoHRgrnhDXZZMAtc86qXRFGqg/exec";
+        let currentMuellim = {};
+        let currentLesson = {};
+        let studentsData = [];
+        let currentStep = 1;
+
+        function login() {
+            let l = document.getElementById('loginInput').value;
+            let p = document.getElementById('parolInput').value;
+            fetch(`${SCRIPT_URL}?action=login&login=${l}&parol=${p}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    currentMuellim = data;
+                    document.getElementById('muellimAdi').innerText = data.ad;
+                    document.getElementById('muellimFenn').innerText = data.fenn;
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('dashboardScreen').style.display = 'block';
+                    loadSchedule();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function reloadSchedule() {
+            loadSchedule();
+        }
+
+        function loadSchedule() {
+            let gunTipi = document.getElementById('gunTipiSelect').value;
+            fetch(`${SCRIPT_URL}?action=getSchedule&muellimAdi=${encodeURIComponent(currentMuellim.ad)}&gunTipi=${gunTipi}`)
+            .then(res => res.json())
+            .then(res => {
+                let container = document.getElementById('scheduleList');
+                container.innerHTML = "";
+                if(res.data.length === 0) {
+                    container.innerHTML = `<div class="alert alert-warning">Bu gün (${gunTipi}) üçün dərsiniz tapılmadı.</div>`;
+                    return;
+                }
+                res.data.forEach(d => {
+                    container.innerHTML += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card p-3 shadow-sm border-primary">
+                                <h5>Fənn: ${d.fenn}</h5>
+                                <p class="mb-1"><b>Saat:</b> ${d.saat}</p>
+                                <p class="mb-2"><b>Qrup:</b> ${d.qrup}</p>
+                                <button class="btn btn-outline-primary btn-sm" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function startLesson(lessonObj) {
+            currentLesson = lessonObj;
+            document.getElementById('activeGroupTitle').innerText = `${lessonObj.fenn} | Saat: ${lessonObj.saat} | Qrup: ${lessonObj.qrup}`;
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('lessonScreen').style.display = 'block';
+
+            fetch(`${SCRIPT_URL}?action=getStudents&qrup=${encodeURIComponent(lessonObj.qrup)}`)
+            .then(res => res.json())
+            .then(res => {
+                studentsData = res.data;
+                renderStudentsLists();
+            });
+        }
+
+        function backToDashboard() {
+            document.getElementById('lessonScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            currentStep = 1;
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+        }
+
+        function renderStudentsLists() {
+            let attDiv = document.getElementById('studentsAttendanceList');
+            let actDiv = document.getElementById('studentsActivityList');
+            attDiv.innerHTML = "";
+            actDiv.innerHTML = "";
+
+            studentsData.forEach((s) => {
+                let fullName = `${s.ad} ${s.soyad}`;
+                attDiv.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                        <span><b>${fullName}</b></span>
+                        <select class="form-select w-50 att-status" data-ad="${s.ad}" data-soyad="${s.soyad}">
+                            <option value="Gəldi">Gəldi</option>
+                            <option value="Gəlmədi">Gəlmədi</option>
+                        </select>
+                    </div>
+                `;
+                actDiv.innerHTML += `
+                    <div class="mb-2">
+                        <label><b>${fullName}</b> - Aktivlik və ya Sual-Cavab Qeydi</label>
+                        <input type="text" class="form-control act-input" data-ad="${s.ad}" placeholder="Məs: Fəal idi / 90 bal">
+                    </div>
+                `;
+            });
+        }
+
+        function nextStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function prevStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function finishLesson() {
+            let payload = {
+                muellim: currentMuellim.ad,
+                fenn: currentLesson.fenn,
+                saat: currentLesson.saat,
+                qrup: currentLesson.qrup,
+                evMovzu: document.getElementById('evMovzu').value,
+                verilenTest: document.getElementById('verilenTest').value,
+                yazilanTest: document.getElementById('yazilanTest').value,
+                duzTest: document.getElementById('duzTest').value,
+                testNovu: document.getElementById('testNovu').value,
+                testMovzulari: document.getElementById('testMovzulari').value,
+                novbetiMovzu: document.getElementById('novbetiMovzu').value,
+                qeyd: document.getElementById('qeyd').value,
+                sagirdler: []
+            };
+
+            let statuses = document.querySelectorAll('.att-status');
+            let activities = document.querySelectorAll('.act-input');
+
+            statuses.forEach((el, i) => {
+                payload.sagirdler.push({
+                    ad: el.getAttribute('data-ad'),
+                    soyad: el.getAttribute('data-soyad'),
+                    status: el.value,
+                    aktivlik: activities[i].value
+                });
+            });
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === "success") {
+                    alert("Dərs uğurla yekunlaşdı və məlumatlar Google Sheet-ə yazıldı!");
+                    location.reload();
+                } else {
+                    alert("Xəta baş verdi: " + res.message);
+                }
+            })
+            .catch(err => {
+                alert("Sorğu zamanı xəta baş verdi: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
