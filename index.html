@@ -3,269 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurs İdarəetmə Paneli - Müəllim</title>
+    <title>Kurs İdarəetmə Paneli - Müəllim Portalı</title>
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .step { display: none; }
-        .step.active { display: block; }
-    </style>
+    <!-- Xüsusi Stil Faylı -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-light">
+<body>
 
-    <div class="container mt-5" id="app">
+    <!-- Rəsmi Portal Başlığı -->
+    <div class="portal-header mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h2>Müəllim İdarəetmə Portalı</h2>
+                <small class="text-light opacity-75">Tədris Prosesi və Davamiyyət Modulu</small>
+            </div>
+            <div id="userInfoHeader" style="display:none;" class="text-end">
+                <span id="headerMuellimAd" class="fw-bold"></span> | <span id="headerMuellimFenn" class="badge bg-light text-dark"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="app">
         <!-- GİRİŞ EKRANI -->
-        <div class="row justify-content-center" id="loginScreen">
+        <div class="row justify-content-center mt-5" id="loginScreen">
             <div class="col-md-4">
-                <div class="card shadow p-4">
-                    <h3 class="text-center mb-3">Müəllim Girişi</h3>
+                <div class="card p-4 bg-white">
+                    <h4 class="text-center mb-4 pb-2 border-bottom text-primary">Sistemə Giriş</h4>
                     <div class="mb-3">
-                        <label>Login</label>
-                        <input type="text" id="loginInput" class="form-control">
+                        <label class="form-label fw-bold small">İstifadəçi adı (Login)</label>
+                        <input type="text" id="loginInput" class="form-control" placeholder="Login kodunuzu daxil edin">
                     </div>
                     <div class="mb-3">
-                        <label>Parol</label>
-                        <input type="password" id="parolInput" class="form-control">
+                        <label class="form-label fw-bold small">Şifrə (Parol)</label>
+                        <input type="password" id="parolInput" class="form-control" placeholder="••••••••">
                     </div>
-                    <button class="btn btn-primary w-100" onclick="login()">Daxil ol</button>
+                    <button class="btn btn-primary w-100 py-2 mt-2" onclick="login()">Daxil Ol</button>
                 </div>
             </div>
         </div>
 
-        <!-- DƏRSLƏRİM EKRANI -->
+        <!-- DƏRSLƏRİM EKRANI (DASHBOARD) -->
         <div id="dashboardScreen" style="display:none;">
-            <h2>Xoş gəldiniz, <span id="muellimAdi"></span> (<span id="muellimFenn"></span>)</h2>
-            <hr>
-            <div class="mb-3">
-                <label><b>Gün Tipini Seçin:</b></label>
-                <select id="gunTipiSelect" class="form-select w-25 d-inline-block ms-2" onchange="reloadSchedule()">
-                    <option value="Tək">Tək günlər</option>
-                    <option value="Cüt">Cüt günlər</option>
-                </select>
+            <div class="card p-3 mb-4 bg-white">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="text-primary mb-0">Xoş gəldiniz, <span id="muellimAdi"></span></h4>
+                        <p class="text-muted small mb-0">Fənn: <span id="muellimFenn" class="fw-bold"></span></p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <label class="fw-bold small me-2">Gün Tipi:</label>
+                        <select id="gunTipiSelect" class="form-select w-50 d-inline-block" onchange="reloadSchedule()">
+                            <option value="Tək">Tək günlər</option>
+                            <option value="Cüt">Cüt günlər</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <h4>Cədvəl / Dərslərim</h4>
-            <div id="scheduleList" class="row mt-3"></div>
+
+            <h5 class="border-bottom pb-2 mb-3 text-secondary">Aktiv Dərs Cədvəliniz</h5>
+            <div id="scheduleList" class="row"></div>
         </div>
 
         <!-- MULTİ-STEP DƏRS İDARƏETMƏSİ -->
         <div id="lessonScreen" style="display:none;">
-            <div class="card shadow p-4">
-                <h4 id="activeGroupTitle" class="text-primary mb-3"></h4>
+            <div class="card p-4 bg-white">
+                <div class="border-bottom pb-3 mb-4">
+                    <h4 id="activeGroupTitle" class="text-primary mb-0"></h4>
+                </div>
                 
                 <!-- Addım 1: Davamiyyət -->
                 <div class="step active" id="step1">
-                    <h5>Addım 1: Davamiyyət</h5>
+                    <h5 class="text-secondary mb-3">Addım 1: Şagird Davamiyyəti</h5>
                     <div id="studentsAttendanceList" class="my-3"></div>
-                    <button class="btn btn-secondary" onclick="backToDashboard()">Geri (Cədvələ qayıt)</button>
-                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Ev Tapşırığı)</button>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary px-4" onclick="backToDashboard()">Cədvələ qayıt</button>
+                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Ev Tapşırığı)</button>
+                    </div>
                 </div>
 
                 <!-- Addım 2: Ev Tapşırığı -->
                 <div class="step" id="step2">
-                    <h5>Addım 2: Ev Tapşırığının Hazırlıq Durumu</h5>
-                    <div class="mb-3"><label>Evə verilən mövzu</label><input type="text" id="evMovzu" class="form-control"></div>
-                    <div class="mb-3"><label>Evə verilən test sayı</label><input type="number" id="verilenTest" class="form-control"></div>
-                    <div class="mb-3"><label>Yazılmış test sayı</label><input type="number" id="yazilanTest" class="form-control"></div>
-                    <div class="mb-3"><label>Düz çıxan testlərin sayı</label><input type="number" id="duzTest" class="form-control"></div>
-                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
-                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Sual-Cavab)</button>
+                    <h5 class="text-secondary mb-3">Addım 2: Ev Tapşırığının Hazırlıq Durumu</h5>
+                    <div class="mb-3"><label class="form-label small fw-bold">Evə verilən mövzu</label><input type="text" id="evMovzu" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Evə verilən test sayı</label><input type="number" id="verilenTest" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Yazılmış test sayı</label><input type="number" id="yazilanTest" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Düz çıxan testlərin sayı</label><input type="number" id="duzTest" class="form-control"></div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
+                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Sual-Cavab)</button>
+                    </div>
                 </div>
 
                 <!-- Addım 3: Sual-Cavab -->
                 <div class="step" id="step3">
-                    <h5>Addım 3: Sual-Cavab Aktivliyi</h5>
+                    <h5 class="text-secondary mb-3">Addım 3: Sual-Cavab və Aktivlik</h5>
                     <div id="studentsActivityList" class="my-3"></div>
-                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
-                    <button class="btn btn-primary" onclick="nextStep()">İrəli (Test Nəticələri)</button>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
+                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Test Nəticələri)</button>
+                    </div>
                 </div>
 
                 <!-- Addım 4: Test Nəticələri -->
                 <div class="step" id="step4">
-                    <h5>Addım 4: Test Nəticələri və Növbəti Dərs</h5>
+                    <h5 class="text-secondary mb-3">Addım 4: Test Nəticələri və Növbəti Dərs</h5>
                     <div class="mb-3">
-                        <label>Testin Növü</label>
+                        <label class="form-label small fw-bold">Testin Növü</label>
                         <select id="testNovu" class="form-select">
                             <option value="Quiz">Quiz</option>
                             <option value="Diaqnostik">Diaqnostik</option>
                             <option value="Sınaq">Sınaq</option>
                         </select>
                     </div>
-                    <div class="mb-3"><label>Əhatə etdiyi mövzular</label><input type="text" id="testMovzulari" class="form-control"></div>
-                    <div class="mb-3"><label>Növbəti dərsə ev tapşırığı / mövzu</label><input type="text" id="novbetiMovzu" class="form-control"></div>
-                    <div class="mb-3"><label>Ümumi Qeyd / Şərh</label><textarea id="qeyd" class="form-control"></textarea></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Əhatə etdiyi mövzular</label><input type="text" id="testMovzulari" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Növbəti dərsə ev tapşırığı / mövzu</label><input type="text" id="novbetiMovzu" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label small fw-bold">Ümumi Qeyd / Şərh</label><textarea id="qeyd" class="form-control" rows="3"></textarea></div>
                     
-                    <button class="btn btn-secondary" onclick="prevStep()">Geri</button>
-                    <button class="btn btn-success" onclick="finishLesson()">Dərsi Bitir və Yadda Saxla</button>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
+                        <button class="btn btn-success px-4" onclick="finishLesson()">Dərsi Bitir və Yadda Saxla</button>
+                    </div>
                 </div>
 
             </div>
         </div>
+
+        <footer class="text-center">
+            <p class="mb-0">© 2026 Tədris Mərkəzi İdarəetmə Sistemi. Bütün hüquqlar qorunur.</p>
+        </footer>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyHIAU4bF6XmYNoZLk2WxYnA0XQrIQvDALOuCR-1lcOxseEVB4DssmELwJbVyDO6hMkg/exec";
-        let currentMuellim = {};
-        let currentLesson = {};
-        let studentsData = [];
-        let currentStep = 1;
-
-        function login() {
-            let l = document.getElementById('loginInput').value;
-            let p = document.getElementById('parolInput').value;
-            fetch(`${SCRIPT_URL}?action=login&login=${l}&parol=${p}`)
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === "success") {
-                    currentMuellim = data;
-                    document.getElementById('muellimAdi').innerText = data.ad;
-                    document.getElementById('muellimFenn').innerText = data.fenn;
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('dashboardScreen').style.display = 'block';
-                    loadSchedule();
-                } else {
-                    alert(data.message);
-                }
-            });
-        }
-
-        function reloadSchedule() {
-            loadSchedule();
-        }
-
-        function loadSchedule() {
-            let gunTipi = document.getElementById('gunTipiSelect').value;
-            fetch(`${SCRIPT_URL}?action=getSchedule&muellimAdi=${encodeURIComponent(currentMuellim.ad)}&gunTipi=${gunTipi}`)
-            .then(res => res.json())
-            .then(res => {
-                let container = document.getElementById('scheduleList');
-                container.innerHTML = "";
-                if(res.data.length === 0) {
-                    container.innerHTML = `<div class="alert alert-warning">Bu gün (${gunTipi}) üçün dərsiniz tapılmadı.</div>`;
-                    return;
-                }
-                res.data.forEach(d => {
-                    container.innerHTML += `
-                        <div class="col-md-4 mb-3">
-                            <div class="card p-3 shadow-sm border-primary">
-                                <h5>Fənn: ${d.fenn}</h5>
-                                <p class="mb-1"><b>Saat:</b> ${d.saat}</p>
-                                <button class="btn btn-outline-primary btn-sm mt-2" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        function startLesson(lessonObj) {
-            currentLesson = lessonObj;
-            document.getElementById('activeGroupTitle').innerText = `${lessonObj.fenn} | Saat: ${lessonObj.saat}`;
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('lessonScreen').style.display = 'block';
-
-            let rawNames = lessonObj.sagirdlerMetni.split(/\r\n|\r|\n/);
-            studentsData = [];
-            
-            rawNames.forEach(name => {
-                let trimmed = name.trim();
-                if(trimmed !== "") {
-                    studentsData.push({ad: trimmed, soyad: ""});
-                }
-            });
-
-            renderStudentsLists();
-        }
-
-        function backToDashboard() {
-            document.getElementById('lessonScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            currentStep = 1;
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step1').classList.add('active');
-        }
-
-        function renderStudentsLists() {
-            let attDiv = document.getElementById('studentsAttendanceList');
-            let actDiv = document.getElementById('studentsActivityList');
-            attDiv.innerHTML = "";
-            actDiv.innerHTML = "";
-
-            studentsData.forEach((s) => {
-                attDiv.innerHTML += `
-                    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                        <span><b>${s.ad}</b></span>
-                        <select class="form-select w-50 att-status" data-ad="${s.ad}">
-                            <option value="Gəldi">Gəldi</option>
-                            <option value="Gəlmədi">Gəlmədi</option>
-                        </select>
-                    </div>
-                `;
-                actDiv.innerHTML += `
-                    <div class="mb-2">
-                        <label><b>${s.ad}</b> - Aktivlik və ya Sual-Cavab Qeydi</label>
-                        <input type="text" class="form-control act-input" data-ad="${s.ad}" placeholder="Məs: Fəal idi / 90 bal">
-                    </div>
-                `;
-            });
-        }
-
-        function nextStep() {
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            currentStep++;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-        }
-
-        function prevStep() {
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            currentStep--;
-            document.getElementById(`step${currentStep}`).classList.add('active');
-        }
-
-        function finishLesson() {
-            let payload = {
-                muellim: currentMuellim.ad,
-                fenn: currentLesson.fenn,
-                saat: currentLesson.saat,
-                qrup: "Matris Qrupu",
-                evMovzu: document.getElementById('evMovzu').value,
-                verilenTest: document.getElementById('verilenTest').value,
-                yazilanTest: document.getElementById('yazilanTest').value,
-                duzTest: document.getElementById('duzTest').value,
-                testNovu: document.getElementById('testNovu').value,
-                testMovzulari: document.getElementById('testMovzulari').value,
-                novbetiMovzu: document.getElementById('novbetiMovzu').value,
-                qeyd: document.getElementById('qeyd').value,
-                sagirdler: []
-            };
-
-            let statuses = document.querySelectorAll('.att-status');
-            let activities = document.querySelectorAll('.act-input');
-
-            statuses.forEach((el, i) => {
-                payload.sagirdler.push({
-                    ad: el.getAttribute('data-ad'),
-                    soyad: "",
-                    status: el.value,
-                    aktivlik: activities[i].value
-                });
-            });
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === "success") {
-                    alert("Dərs uğurla yekunlaşdı və məlumatlar Google Sheet-ə yazıldı!");
-                    location.reload();
-                } else {
-                    alert("Xəta baş verdi: " + res.message);
-                }
-            })
-            .catch(err => {
-                alert("Sorğu zamanı xəta baş verdi: " + err);
-            });
-        }
-    </script>
+    <!-- Xüsusi JavaScript Faylı -->
+    <script src="script.js"></script>
 </body>
 </html>
