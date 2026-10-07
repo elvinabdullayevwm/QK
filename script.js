@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzK_NSEBc6wrAfaDj8iKp3xLNAs5KVtvLepVKI2m0BSn238LWTVd_Mdhf2p7pM0KnUVBw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9NXQGYiTGbeQauEAIskkoZMIO6J38sGSPlJzPYvSEtu8S9W9nC2C4O8aYy1aJQBW1wQ/exec"; // Öz Google Apps Script Web App linkini bura yaz
 let currentMuellim = {};
 let currentLesson = {};
 let studentsData = [];
@@ -42,7 +42,6 @@ function loadSchedule() {
             return;
         }
         res.data.forEach(d => {
-            // Saat formatını təmizləyirik ki, 1899 filan çıxmasın
             let cleanSaat = d.saat;
             if(cleanSaat.includes("T")) {
                 let timePart = cleanSaat.split("T")[1];
@@ -69,7 +68,6 @@ function startLesson(lessonObj) {
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('lessonScreen').style.display = 'block';
 
-    // Bütün sətir sonu simvolları ilə adları parçalayırıq
     let rawNames = lessonObj.sagirdlerMetni.split(/\r\n|\r|\n/);
     studentsData = [];
     
@@ -93,11 +91,15 @@ function backToDashboard() {
 
 function renderStudentsLists() {
     let attDiv = document.getElementById('studentsAttendanceList');
+    let hwDiv = document.getElementById('studentsHomeworkList');
     let actDiv = document.getElementById('studentsActivityList');
+    
     attDiv.innerHTML = "";
+    hwDiv.innerHTML = "";
     actDiv.innerHTML = "";
 
     studentsData.forEach((s) => {
+        // Addım 1: Davamiyyət
         attDiv.innerHTML += `
             <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
                 <span><b>${s.ad}</b></span>
@@ -107,6 +109,29 @@ function renderStudentsLists() {
                 </select>
             </div>
         `;
+
+        // Addım 2: Hər şagird üçün fərdi ev tapşırığı xanaları
+        hwDiv.innerHTML += `
+            <div class="card p-3 mb-3 bg-light">
+                <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <label class="small text-muted">Verilən test sayı</label>
+                        <input type="number" class="form-control hw-verilen" data-ad="${s.ad}" placeholder="0">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="small text-muted">Yazılan test sayı</label>
+                        <input type="number" class="form-control hw-yazilan" data-ad="${s.ad}" placeholder="0">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="small text-muted">Düz çıxan test sayı</label>
+                        <input type="number" class="form-control hw-duz" data-ad="${s.ad}" placeholder="0">
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Addım 3: Sual-Cavab
         actDiv.innerHTML += `
             <div class="mb-2">
                 <label class="small text-muted"><b>${s.ad}</b> - Aktivlik / Sual-Cavab</label>
@@ -135,9 +160,6 @@ function finishLesson() {
         saat: currentLesson.saat,
         qrup: "Matris Qrupu",
         evMovzu: document.getElementById('evMovzu').value,
-        verilenTest: document.getElementById('verilenTest').value,
-        yazilanTest: document.getElementById('yazilanTest').value,
-        duzTest: document.getElementById('duzTest').value,
         testNovu: document.getElementById('testNovu').value,
         testMovzulari: document.getElementById('testMovzulari').value,
         novbetiMovzu: document.getElementById('novbetiMovzu').value,
@@ -146,6 +168,9 @@ function finishLesson() {
     };
 
     let statuses = document.querySelectorAll('.att-status');
+    let verilenInputs = document.querySelectorAll('.hw-verilen');
+    let yazilanInputs = document.querySelectorAll('.hw-yazilan');
+    let duzInputs = document.querySelectorAll('.hw-duz');
     let activities = document.querySelectorAll('.act-input');
 
     statuses.forEach((el, i) => {
@@ -153,6 +178,9 @@ function finishLesson() {
             ad: el.getAttribute('data-ad'),
             soyad: "",
             status: el.value,
+            verilenTest: verilenInputs[i].value || "0",
+            yazilanTest: yazilanInputs[i].value || "0",
+            duzTest: duzInputs[i].value || "0",
             aktivlik: activities[i].value
         });
     });
