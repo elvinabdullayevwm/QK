@@ -1,5 +1,4 @@
-
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwT6gMW2Bb2sVdd8TMxCr7rmxMvsGL-_Qx7iXc4RoRVFcvc6KHg4hsdJwun6lPAOjXK0g/exec"; // Öz Google Apps Script Web App linkini bura yaz
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwT6gMW2Bb2sVdd8TMxCr7rmxMvsGL-_Qx7iXc4RoRVFcvc6KHg4hsdJwun6lPAOjXK0g/exec";
 let currentMuellim = {};
 let currentLesson = {};
 let studentsData = [];
@@ -20,11 +19,9 @@ function login() {
         if(data.status === "success") {
             currentMuellim = data;
             
-            // Ana səhifəni və bölmələri gizlədib paneli açırıq
             document.getElementById('hero').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'none'; // Bütün ana səhifə elementləri buradadır
+            document.getElementById('mainContainer').style.display = 'none';
 
-            // Müəllim panelini yaratmaq və ya göstərmək üçün dinamik konteyner yaradırıq
             showMuellimDashboard();
 
             let modalEl = document.getElementById('loginModal');
@@ -87,7 +84,7 @@ function showMuellimDashboard() {
                     </div>
                 </div>
 
-                <!-- Addım 2: Test Statistikası (Verilən, İşlənilən, Doğru) -->
+                <!-- Addım 2: Test Statistikası -->
                 <div class="step" id="step2" style="display:none;">
                     <h5 class="text-secondary mb-3">Addım 2: Ev Tapşırığı / Test Statistikası</h5>
                     <div class="mb-3">
@@ -111,7 +108,7 @@ function showMuellimDashboard() {
                     </div>
                 </div>
 
-                <!-- Addım 4: Əlavə Yoxlama (Diaqnostik, Sınaq, OTK, DIM və s.) -->
+                <!-- Addım 4: Əlavə Yoxlama -->
                 <div class="step" id="step4" style="display:none;">
                     <h5 class="text-secondary mb-3">Addım 4: Əlavə Yoxlama</h5>
                     <div class="row mb-3">
@@ -190,7 +187,6 @@ function startLesson(lessonObj) {
     let rawNames = lessonObj.sagirdlerMetni.split(/\r\n|\r|\n/);
     studentsData = [];
     
-    // Şagirdlərin adlarından yalnız ilk 10 sətri götürürük
     let count = 0;
     rawNames.forEach(name => {
         let trimmed = name.trim();
@@ -226,7 +222,6 @@ function renderAllSteps() {
     hwFinalDiv.innerHTML = "";
 
     studentsData.forEach((s) => {
-        // Addım 1
         attDiv.innerHTML += `
             <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
                 <span><b>${s.ad}</b></span>
@@ -237,7 +232,6 @@ function renderAllSteps() {
             </div>
         `;
 
-        // Addım 2: Test Statistikası
         statDiv.innerHTML += `
             <div class="card p-3 mb-3 bg-light">
                 <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
@@ -258,7 +252,6 @@ function renderAllSteps() {
             </div>
         `;
 
-        // Addım 3: Emosional durum & Aktivlik
         actDiv.innerHTML += `
             <div class="card p-3 mb-3 bg-light">
                 <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
@@ -275,7 +268,6 @@ function renderAllSteps() {
             </div>
         `;
 
-        // Addım 4: Əlavə Yoxlama
         extraDiv.innerHTML += `
             <div class="card p-3 mb-3 bg-light">
                 <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
@@ -292,14 +284,13 @@ function renderAllSteps() {
             </div>
         `;
 
-        // Addım 5: Ev Tapşırığı və Qeyd
         hwFinalDiv.innerHTML += `
             <div class="card p-3 mb-3 bg-light">
                 <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="small text-muted">Ev tapşırığı</label>
-                        <input type="text" class="form-control hw- tapsiriq" data-ad="${s.ad}" placeholder="Ev tapşırığı">
+                        <input type="text" class="form-control hw-tapsiriq" data-ad="${s.ad}" placeholder="Ev tapşırığı">
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="small text-muted">Qeyd</label>
