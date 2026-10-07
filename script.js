@@ -42,11 +42,19 @@ function loadSchedule() {
             return;
         }
         res.data.forEach(d => {
+            // Saat formatını təmizləyirik ki, 1899 filan çıxmasın
+            let cleanSaat = d.saat;
+            if(cleanSaat.includes("T")) {
+                let timePart = cleanSaat.split("T")[1];
+                if(timePart) cleanSaat = timePart.substring(0, 5);
+            }
+            d.saat = cleanSaat;
+
             container.innerHTML += `
                 <div class="col-md-4 mb-3">
                     <div class="card p-3 schedule-card bg-white">
                         <h6 class="text-primary fw-bold">Fənn: ${d.fenn}</h6>
-                        <p class="mb-2 text-secondary"><b>Saat:</b> ${d.saat}</p>
+                        <p class="mb-2 text-secondary"><b>Saat:</b> ${cleanSaat}</p>
                         <button class="btn btn-outline-primary btn-sm w-100" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
                     </div>
                 </div>
@@ -61,6 +69,7 @@ function startLesson(lessonObj) {
     document.getElementById('dashboardScreen').style.display = 'none';
     document.getElementById('lessonScreen').style.display = 'block';
 
+    // Bütün sətir sonu simvolları ilə adları parçalayırıq
     let rawNames = lessonObj.sagirdlerMetni.split(/\r\n|\r|\n/);
     studentsData = [];
     
