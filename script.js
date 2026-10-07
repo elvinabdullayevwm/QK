@@ -1,7 +1,7 @@
 
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfwPetP4LDE0a8dTLX9DDwGzO3GosHErbaRWMtxYIGOV7SfnPCGivzaWJwqbXwn20BcA/exec"; // Öz Google Apps Script Web App linkini bura yaz
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyczfOkpdZeamko3Y2tw328N2vQ6CJvybl-KeoFzdPoW0Nvs3OhCrWU_0mB5oLJuQJoXQ/exec"; // Öz Google Apps Script Web App linkini bura yaz
 let currentMuellim = {};
 let currentLesson = {};
 let studentsData = [];
