@@ -1,0 +1,83 @@
+:root {
+    --dim-blue: #0d47a1;
+    --dim-light-blue: #1565c0;
+    --dim-bg: #f4f6f9;
+    --dim-border: #b0bec5;
+}
+
+body {
+    background-color: var(--dim-bg);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+}
+
+/* Rəsmi Portal Başlığı (Dim.gov.az üslubu) */
+.portal-header {
+    background: linear-gradient(135deg, var(--dim-blue), var(--dim-light-blue));
+    color: white;
+    padding: 15px 0;
+    border-bottom: 4px solid #002171;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.portal-header h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.card {
+    border: 1px solid var(--dim-border);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.btn-primary {
+    background-color: var(--dim-blue);
+    border-color: #0d47a1;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #002171;
+    border-color: #002171;
+}
+
+.btn-success {
+    background-color: #2e7d32;
+    border-color: #1b5e20;
+    border-radius: 2px;
+}
+
+.form-control, .form-select {
+    border-radius: 2px;
+    border: 1px solid #90a4ae;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--dim-blue);
+    box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.25);
+}
+
+.step { display: none; }
+.step.active { display: block; }
+
+/* Cədvəl kartları */
+.schedule-card {
+    border-left: 5px solid var(--dim-blue);
+    transition: all 0.2s ease;
+}
+
+.schedule-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+footer {
+    margin-top: 50px;
+    font-size: 13px;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    padding-top: 15px;
+}
