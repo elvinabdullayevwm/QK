@@ -42,18 +42,14 @@ function loadSchedule() {
             return;
         }
         res.data.forEach(d => {
-            let cleanSaat = d.saat;
-            if(cleanSaat.includes("T")) {
-                let timePart = cleanSaat.split("T")[1];
-                if(timePart) cleanSaat = timePart.substring(0, 5);
-            }
-            d.saat = cleanSaat;
+            // Heç bir saat manipulyasiyası etmirik, serverdən necə gəlirsə birbaşa yazırıq
+            let displaySaat = d.saat;
 
             container.innerHTML += `
                 <div class="col-md-4 mb-3">
                     <div class="card p-3 schedule-card bg-white">
                         <h6 class="text-primary fw-bold">Fənn: ${d.fenn}</h6>
-                        <p class="mb-2 text-secondary"><b>Saat:</b> ${cleanSaat}</p>
+                        <p class="mb-2 text-secondary"><b>Saat:</b> ${displaySaat}</p>
                         <button class="btn btn-outline-primary btn-sm w-100" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
                     </div>
                 </div>
