@@ -1,3 +1,4 @@
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9NXQGYiTGbeQauEAIskkoZMIO6J38sGSPlJzPYvSEtu8S9W9nC2C4O8aYy1aJQBW1wQ/exec"; // Öz Google Apps Script Web App linkini bura yaz
 let currentMuellim = {};
 let currentLesson = {};
@@ -5,24 +6,51 @@ let studentsData = [];
 let currentStep = 1;
 
 function login() {
-    let l = document.getElementById('loginInput').value;
-    let p = document.getElementById('parolInput').value;
+    let lInput = document.getElementById('loginInput');
+    let pInput = document.getElementById('parolInput');
+    
+    if (!lInput || !pInput) return;
+    
+    let l = lInput.value;
+    let p = pInput.value;
+    
     fetch(`${SCRIPT_URL}?action=login&login=${l}&parol=${p}`)
     .then(res => res.json())
     .then(data => {
         if(data.status === "success") {
             currentMuellim = data;
-            document.getElementById('muellimAdi').innerText = data.ad;
-            document.getElementById('muellimFenn').innerText = data.fenn;
-            document.getElementById('headerMuellimAd').innerText = data.ad;
-            document.getElementById('headerMuellimFenn').innerText = data.fenn;
-            document.getElementById('userInfoHeader').style.display = 'block';
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            loadSchedule();
+            
+            // Elementlərin olub- olmadığını yoxlayaraq dəyər veririk
+            let mAdi = document.getElementById('muellimAdi');
+            let mFenn = document.getElementById('muellimFenn');
+            let hAd = document.getElementById('headerMuellimAd');
+            let hFenn = document.getElementById('headerMuellimFenn');
+            let uHeader = document.getElementById('userInfoHeader');
+            let loginScreen = document.getElementById('loginScreen');
+            let dashScreen = document.getElementById('dashboardScreen');
+            
+            if(mAdi) mAdi.innerText = data.ad;
+            if(mFenn) mFenn.innerText = data.fenn;
+            if(hAd) hAd.innerText = data.ad;
+            if(hFenn) hFenn.innerText = data.fenn;
+            if(uHeader) uHeader.style.display = 'block';
+            if(loginScreen) loginScreen.style.display = 'none';
+            if(dashScreen) dashScreen.style.display = 'block';
+            
+            // Modalı bağlayırıq (əgər açıqdısa)
+            let modalEl = document.getElementById('loginModal');
+            if(modalEl) {
+                let modal = bootstrap.Modal.getInstance(modalEl);
+                if(modal) modal.hide();
+            }
+
+            if(typeof loadSchedule === 'function') loadSchedule();
         } else {
             alert(data.message);
         }
+    })
+    .catch(err => {
+        alert("Giriş zamanı xəta baş verdi: " + err);
     });
 }
 
@@ -31,18 +59,22 @@ function reloadSchedule() {
 }
 
 function loadSchedule() {
-    let gunTipi = document.getElementById('gunTipiSelect').value;
+    let gunTipiSelect = document.getElementById('gunTipiSelect');
+    if (!gunTipiSelect) return;
+    
+    let gunTipi = gunTipiSelect.value;
     fetch(`${SCRIPT_URL}?action=getSchedule&muellimAdi=${encodeURIComponent(currentMuellim.ad)}&gunTipi=${gunTipi}`)
     .then(res => res.json())
     .then(res => {
         let container = document.getElementById('scheduleList');
+        if(!container) return;
+        
         container.innerHTML = "";
         if(res.data.length === 0) {
             container.innerHTML = `<div class="alert alert-warning">Bu gün (${gunTipi}) üçün dərsiniz tapılmadı.</div>`;
             return;
         }
         res.data.forEach(d => {
-            // Heç bir saat manipulyasiyası etmirik, serverdən necə gəlirsə birbaşa yazırıq
             let displaySaat = d.saat;
 
             container.innerHTML += `
@@ -60,9 +92,13 @@ function loadSchedule() {
 
 function startLesson(lessonObj) {
     currentLesson = lessonObj;
-    document.getElementById('activeGroupTitle').innerText = `${lessonObj.fenn} | Saat: ${lessonObj.saat}`;
-    document.getElementById('dashboardScreen').style.display = 'none';
-    document.getElementById('lessonScreen').style.display = 'block';
+    let titleEl = document.getElementById('activeGroupTitle');
+    if(titleEl) titleEl.innerText = `${lessonObj.fenn} | Saat: ${lessonObj.saat}`;
+    
+    let dashScreen = document.getElementById('dashboardScreen');
+    let lessonScreen = document.getElementById('lessonScreen');
+    if(dashScreen) dashScreen.style.display = 'none';
+    if(lessonScreen) lessonScreen.style.display = 'block';
 
     let rawNames = lessonObj.sagirdlerMetni.split(/\r\n|\r|\n/);
     studentsData = [];
@@ -78,11 +114,14 @@ function startLesson(lessonObj) {
 }
 
 function backToDashboard() {
-    document.getElementById('lessonScreen').style.display = 'none';
-    document.getElementById('dashboardScreen').style.display = 'block';
+    let lessonScreen = document.getElementById('lessonScreen');
+    let dashScreen = document.getElementById('dashboardScreen');
+    if(lessonScreen) lessonScreen.style.display = 'none';
+    if(dashScreen) dashScreen.style.display = 'block';
     currentStep = 1;
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step1').classList.add('active');
+    let step1 = document.getElementById('step1');
+    if(step1) step1.classList.add('active');
 }
 
 function renderStudentsLists() {
@@ -90,76 +129,89 @@ function renderStudentsLists() {
     let hwDiv = document.getElementById('studentsHomeworkList');
     let actDiv = document.getElementById('studentsActivityList');
     
-    attDiv.innerHTML = "";
-    hwDiv.innerHTML = "";
-    actDiv.innerHTML = "";
+    if(attDiv) attDiv.innerHTML = "";
+    if(hwDiv) hwDiv.innerHTML = "";
+    if(actDiv) actDiv.innerHTML = "";
 
     studentsData.forEach((s) => {
-        // Addım 1: Davamiyyət
-        attDiv.innerHTML += `
-            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                <span><b>${s.ad}</b></span>
-                <select class="form-select w-50 att-status" data-ad="${s.ad}">
-                    <option value="Gəldi">Gəldi</option>
-                    <option value="Gəlmədi">Gəlmədi</option>
-                </select>
-            </div>
-        `;
+        if(attDiv) {
+            attDiv.innerHTML += `
+                <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                    <span><b>${s.ad}</b></span>
+                    <select class="form-select w-50 att-status" data-ad="${s.ad}">
+                        <option value="Gəldi">Gəldi</option>
+                        <option value="Gəlmədi">Gəlmədi</option>
+                    </select>
+                </div>
+            `;
+        }
 
-        // Addım 2: Hər şagird üçün fərdi ev tapşırığı xanaları
-        hwDiv.innerHTML += `
-            <div class="card p-3 mb-3 bg-light">
-                <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <label class="small text-muted">Verilən test sayı</label>
-                        <input type="number" class="form-control hw-verilen" data-ad="${s.ad}" placeholder="0">
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="small text-muted">Yazılan test sayı</label>
-                        <input type="number" class="form-control hw-yazilan" data-ad="${s.ad}" placeholder="0">
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="small text-muted">Düz çıxan test sayı</label>
-                        <input type="number" class="form-control hw-duz" data-ad="${s.ad}" placeholder="0">
+        if(hwDiv) {
+            hwDiv.innerHTML += `
+                <div class="card p-3 mb-3 bg-light">
+                    <h6 class="text-primary fw-bold mb-2">${s.ad}</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="small text-muted">Verilən test sayı</label>
+                            <input type="number" class="form-control hw-verilen" data-ad="${s.ad}" placeholder="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="small text-muted">Yazılan test sayı</label>
+                            <input type="number" class="form-control hw-yazilan" data-ad="${s.ad}" placeholder="0">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="small text-muted">Düz çıxan test sayı</label>
+                            <input type="number" class="form-control hw-duz" data-ad="${s.ad}" placeholder="0">
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
 
-        // Addım 3: Sual-Cavab
-        actDiv.innerHTML += `
-            <div class="mb-2">
-                <label class="small text-muted"><b>${s.ad}</b> - Aktivlik / Sual-Cavab</label>
-                <input type="text" class="form-control act-input" data-ad="${s.ad}" placeholder="Məs: Fəal idi / 90 bal">
-            </div>
-        `;
+        if(actDiv) {
+            actDiv.innerHTML += `
+                <div class="mb-2">
+                    <label class="small text-muted"><b>${s.ad}</b> - Aktivlik / Sual-Cavab</label>
+                    <input type="text" class="form-control act-input" data-ad="${s.ad}" placeholder="Məs: Fəal idi / 90 bal">
+                </div>
+            `;
+        }
     });
 }
 
 function nextStep() {
-    document.getElementById(`step${currentStep}`).classList.remove('active');
+    let currentStepEl = document.getElementById(`step${currentStep}`);
+    if(currentStepEl) currentStepEl.classList.remove('active');
     currentStep++;
-    document.getElementById(`step${currentStep}`).classList.add('active');
+    let nextStepEl = document.getElementById(`step${currentStep}`);
+    if(nextStepEl) nextStepEl.classList.add('active');
 }
 
 function prevStep() {
-    document.getElementById(`step${currentStep}`).classList.remove('active');
+    let currentStepEl = document.getElementById(`step${currentStep}`);
+    if(currentStepEl) currentStepEl.classList.remove('active');
     currentStep--;
-    document.getElementById(`step${currentStep}`).classList.add('active');
+    let prevStepEl = document.getElementById(`step${currentStep}`);
+    if(prevStepEl) prevStepEl.classList.add('active');
 }
 
 function finishLesson() {
+    let evMovzuEl = document.getElementById('evMovzu');
+    let testNovuEl = document.getElementById('testNovu');
+    let testMovzulariEl = document.getElementById('testMovzulari');
+    let novbetiMovzuEl = document.getElementById('novbetiMovzu');
+    let qeydEl = document.getElementById('qeyd');
+
     let payload = {
         muellim: currentMuellim.ad,
         fenn: currentLesson.fenn,
         saat: currentLesson.saat,
         qrup: "Matris Qrupu",
-        evMovzu: document.getElementById('evMovzu').value,
-        testNovu: document.getElementById('testNovu').value,
-        testMovzulari: document.getElementById('testMovzulari').value,
-        novbetiMovzu: document.getElementById('novbetiMovzu').value,
-        qeyd: document.getElementById('qeyd').value,
+        evMovzu: evMovzuEl ? evMovzuEl.value : "",
+        testNovu: testNovuEl ? testNovuEl.value : "",
+        testMovzulari: testMovzulariEl ? testMovzulariEl.value : "",
+        novbetiMovzu: novbetiMovzuEl ? novbetiMovzuEl.value : "",
+        qeyd: qeydEl ? qeydEl.value : "",
         sagirdler: []
     };
 
@@ -174,10 +226,10 @@ function finishLesson() {
             ad: el.getAttribute('data-ad'),
             soyad: "",
             status: el.value,
-            verilenTest: verilenInputs[i].value || "0",
-            yazilanTest: yazilanInputs[i].value || "0",
-            duzTest: duzInputs[i].value || "0",
-            aktivlik: activities[i].value
+            verilenTest: verilenInputs[i] ? (verilenInputs[i].value || "0") : "0",
+            yazilanTest: yazilanInputs[i] ? (yazilanInputs[i].value || "0") : "0",
+            duzTest: duzInputs[i] ? (duzInputs[i].value || "0") : "0",
+            aktivlik: activities[i] ? activities[i].value : ""
         });
     });
 
@@ -196,5 +248,33 @@ function finishLesson() {
     })
     .catch(err => {
         alert("Sorğu zamanı xəta baş verdi: " + err);
+    });
+}
+
+function handleRegister(event) {
+    event.preventDefault();
+    
+    let payload = {
+        action: "register",
+        adSoyad: event.target.querySelector('input[type="text"]').value,
+        sinif: event.target.querySelector('select').value,
+        telefon: event.target.querySelector('input[type="tel"]').value
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.status === "success") {
+            alert("Müraciətiniz uğurla qeydə alındı və Google Sheets-ə göndərildi! Tezliklə sizinlə əlaqə saxlanılacaq.");
+            event.target.reset();
+        } else {
+            alert("Xəta baş verdi: " + res.message);
+        }
+    })
+    .catch(err => {
+        alert("Bağlantı xətası: " + err);
     });
 }
