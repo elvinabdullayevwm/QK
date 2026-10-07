@@ -3,138 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurs İdarəetmə Paneli - Müəllim Portalı</title>
+    <title>Tədris Mərkəzi - Rəsmi Portal</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-light">
 
-    <!-- Rəsmi Portal Başlığı -->
-    <div class="portal-header mb-4">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div>
-                <h2>Müəllim İdarəetmə Portalı</h2>
-                <small class="text-light opacity-75">Tədris Prosesi və Davamiyyət Modulu</small>
-            </div>
-            <div id="userInfoHeader" style="display:none;" class="text-end">
-                <span id="headerMuellimAd" class="fw-bold"></span> | <span id="headerMuellimFenn" class="badge bg-light text-dark"></span>
+    <!-- Navbar / Ümumi Menyu -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Tədris Mərkəzi Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="#hero">Ana Səhifə</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#news">Son Xəbərlər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Haqqımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#register">Qeydiyyat</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Əlaqə</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <button class="btn btn-light text-primary fw-bold px-3 py-1" data-bs-toggle="modal" data-bs-target="#loginModal">Portal Girişi</button>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="container" id="app">
-        <!-- GİRİŞ EKRANI -->
-        <div class="row justify-content-center mt-5" id="loginScreen">
-            <div class="col-md-4">
-                <div class="card p-4 bg-white">
-                    <h4 class="text-center mb-4 pb-2 border-bottom text-primary">Sistemə Giriş</h4>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">İstifadəçi adı (Login)</label>
-                        <input type="text" id="loginInput" class="form-control" placeholder="Login kodunuzu daxil edin">
+    <!-- Hero / Giriş Banneri -->
+    <header id="hero" class="bg-primary text-white text-center py-5 mb-5 shadow-sm" style="background: linear-gradient(135deg, #0d47a1, #1565c0);">
+        <div class="container py-4">
+            <h1 class="display-5 fw-bold">Gələcəyinizi Bizimlə Qurun</h1>
+            <p class="lead opacity-75">Peşəkar müəllim heyəti və müasir tədris proqramları ilə zirvəyə doğru.</p>
+            <a href="#register" class="btn btn-light text-primary btn-lg fw-bold mt-3 px-4">İndi Müraciət Et</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Son Xəbərlər (Yan-yana 3-4 xəbər) -->
+        <section id="news" class="mb-5">
+            <h3 class="text-primary border-bottom pb-2 mb-4">Son Xəbərlər və Elanlar</h3>
+            <div class="row">
+                <!-- Xəbər 1 -->
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2">Elan</span>
+                            <h5 class="card-title fs-6 fw-bold">Yaz Sınaq İmtahanları Başlayır</h5>
+                            <p class="card-text small text-muted">Bütün siniflər üçün növbəti sınaq imtahanının qeydiyyatı elan edildi.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0"><small class="text-secondary">5 İyul, 2026</small></div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold small">Şifrə (Parol)</label>
-                        <input type="password" id="parolInput" class="form-control" placeholder="••••••••">
+                </div>
+                <!-- Xəbər 2 -->
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <span class="badge bg-success mb-2">Uğurumuz</span>
+                            <h5 class="card-title fs-6 fw-bold">Respublika Fənn Olimpiadası</h5>
+                            <p class="card-text small text-muted">Mərkəzimizin 12 şagirdi olimpiadanın ikinci mərhələsinə vəsiqə qazandı.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0"><small class="text-secondary">2 İyul, 2026</small></div>
                     </div>
-                    <button class="btn btn-primary w-100 py-2 mt-2" onclick="login()">Daxil Ol</button>
+                </div>
+                <!-- Xəbər 3 -->
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <span class="badge bg-info text-dark mb-2">Tədbir</span>
+                            <h5 class="card-title fs-6 fw-bold">Valideyn-Müəllim Görüşü</h5>
+                            <p class="card-text small text-muted">Aylıq nəticələrin müzakirəsi və açıq qapı günü keçiriləcəkdir.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0"><small class="text-secondary">28 İyun, 2026</small></div>
+                    </div>
+                </div>
+                <!-- Xəbər 4 -->
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <span class="badge bg-warning text-dark mb-2">Yenilik</span>
+                            <h5 class="card-title fs-6 fw-bold">Yeni İT və Proqramlaşdırma Dərsləri</h5>
+                            <p class="card-text small text-muted">Məktəblilər üçün Python və veb proqramlaşdırma qruplarına qəbul başladı.</p>
+                        </div>
+                        <div class="card-footer bg-white border-0"><small class="text-secondary">25 İyun, 2026</small></div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- DƏRSLƏRİM EKRANI (DASHBOARD) -->
-        <div id="dashboardScreen" style="display:none;">
-            <div class="card p-3 mb-4 bg-white">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h4 class="text-primary mb-0">Xoş gəldiniz, <span id="muellimAdi"></span></h4>
-                        <p class="text-muted small mb-0">Fənn: <span id="muellimFenn" class="fw-bold"></span></p>
+        <!-- Haqqımızda -->
+        <section id="about" class="mb-5 bg-white p-4 rounded shadow-sm">
+            <h3 class="text-primary border-bottom pb-2 mb-3">Haqqımızda</h3>
+            <p class="text-secondary">
+                Tədris Mərkəzimiz illərdir ki, abituriyent hazırlığı, fənn kursları və intellektual inkişaf istiqamətində yüksək keyfiyyətli təhsil xidmətləri göstərir. Peşəkar müəllim kollektivimiz, fərdi yanaşma metodikamız və qabaqcıl idarəetmə sistemimiz sayəsində hər bir şagirdin maksimum nəticə əldə etməsini təmin edirik. Məqsədimiz savadlı, düşünən və gələcəyə inamla baxan gənclər yetişdirməkdir.
+            </p>
+        </section>
+
+        <!-- Qeydiyyat üçün müraciət -->
+        <section id="register" class="mb-5 bg-white p-4 rounded shadow-sm">
+            <h3 class="text-primary border-bottom pb-2 mb-3">Qeydiyyat üçün Müraciət</h3>
+            <form onsubmit="handleRegister(event)">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label small fw-bold">Şagirdin Adı və Soyadı</label>
+                        <input type="text" class="form-control" required placeholder="Ad Soyad">
                     </div>
-                    <div class="col-md-4 text-end">
-                        <label class="fw-bold small me-2">Gün Tipi:</label>
-                        <select id="gunTipiSelect" class="form-select w-50 d-inline-block" onchange="reloadSchedule()">
-                            <option value="Tək">Tək günlər</option>
-                            <option value="Cüt">Cüt günlər</option>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label small fw-bold">Sinif / İxtisas</label>
+                        <select class="form-select" required>
+                            <option value="">Sinif seçin</option>
+                            <option value="V-VIII sinif">V-VIII siniflər</option>
+                            <option value="IX-XI sinif (Abituriyent)">IX-XI siniflər (Abituriyent)</option>
+                            <option value="İT Kursu">İT / Proqramlaşdırma</option>
                         </select>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label small fw-bold">Əlaqə Nömrəsi (Valideyn)</label>
+                        <input type="tel" class="form-control" required placeholder="+994 (XX) XXX-XX-XX">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary px-4">Müraciəti Göndər</button>
+            </form>
+        </section>
+
+        <!-- Əlaqə -->
+        <section id="contact" class="mb-5 bg-white p-4 rounded shadow-sm">
+            <h3 class="text-primary border-bottom pb-2 mb-3">Bizimlə Əlaqə</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><b>Ünvan:</b> Gəncə Qalası Ticarət Mərkəzi</p>
+                    <p><b>Telefon:</b> +994 (50) 000-00-00</p>
+                    <p><b>E-poçt:</b> info@tedrismerkezi.az</p>
+                </div>
+                <div class="col-md-6">
+                    <p><b>İş saatları:</b> Bazar ertəsi - Şənbə: 09:00 - 19:00</p>
+                    <p><b>İstirahət günü:</b> Bazar</p>
                 </div>
             </div>
+        </section>
 
-            <h5 class="border-bottom pb-2 mb-3 text-secondary">Aktiv Dərs Cədvəliniz</h5>
-            <div id="scheduleList" class="row"></div>
-        </div>
-
-        <!-- MULTİ-STEP DƏRS İDARƏETMƏSİ -->
-        <div id="lessonScreen" style="display:none;">
-            <div class="card p-4 bg-white">
-                <div class="border-bottom pb-3 mb-4">
-                    <h4 id="activeGroupTitle" class="text-primary mb-0"></h4>
-                </div>
-                
-                <!-- Addım 1: Davamiyyət -->
-                <div class="step active" id="step1">
-                    <h5 class="text-secondary mb-3">Addım 1: Şagird Davamiyyəti</h5>
-                    <div id="studentsAttendanceList" class="my-3"></div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-secondary px-4" onclick="backToDashboard()">Cədvələ qayıt</button>
-                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Ev Tapşırığı)</button>
-                    </div>
-                </div>
-
-                <!-- Addım 2: Ev Tapşırığı (Hər şagird üçün fərdi) -->
-                <div class="step" id="step2">
-                    <h5 class="text-secondary mb-3">Addım 2: Ev Tapşırığının Hazırlıq Durumu</h5>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Evə verilən ümumi mövzu / tapşırıq</label>
-                        <input type="text" id="evMovzu" class="form-control" placeholder="Məs: səhifə 45-50">
-                    </div>
-                    <div id="studentsHomeworkList" class="my-3"></div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
-                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Sual-Cavab)</button>
-                    </div>
-                </div>
-
-                <!-- Addım 3: Sual-Cavab -->
-                <div class="step" id="step3">
-                    <h5 class="text-secondary mb-3">Addım 3: Sual-Cavab və Aktivlik</h5>
-                    <div id="studentsActivityList" class="my-3"></div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
-                        <button class="btn btn-primary px-4" onclick="nextStep()">Növbəti (Test Nəticələri)</button>
-                    </div>
-                </div>
-
-                <!-- Addım 4: Test Nəticələri -->
-                <div class="step" id="step4">
-                    <h5 class="text-secondary mb-3">Addım 4: Test Nəticələri və Növbəti Dərs</h5>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Testin Növü</label>
-                        <select id="testNovu" class="form-select">
-                            <option value="Quiz">Quiz</option>
-                            <option value="Diaqnostik">Diaqnostik</option>
-                            <option value="Sınaq">Sınaq</option>
-                        </select>
-                    </div>
-                    <div class="mb-3"><label class="form-label small fw-bold">Əhatə etdiyi mövzular</label><input type="text" id="testMovzulari" class="form-control"></div>
-                    <div class="mb-3"><label class="form-label small fw-bold">Növbəti dərsə ev tapşırığı / mövzu</label><input type="text" id="novbetiMovzu" class="form-control"></div>
-                    <div class="mb-3"><label class="form-label small fw-bold">Ümumi Qeyd / Şərh</label><textarea id="qeyd" class="form-control" rows="3"></textarea></div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-secondary px-4" onclick="prevStep()">Geri</button>
-                        <button class="btn btn-success px-4" onclick="finishLesson()">Dərsi Bitir və Yadda Saxla</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <footer class="text-center">
-            <p class="mb-0">© 2026 Tədris Mərkəzi İdarəetmə Sistemi. Bütün hüquqlar qorunur.</p>
+        <footer class="text-center py-4 border-top">
+            <p class="mb-0 text-muted small">© 2026 Tədris Mərkəzi İdarəetmə Sistemi. Bütün hüquqlar qorunur.</p>
         </footer>
     </div>
 
-    <!-- Xüsusi JavaScript Faylı -->
+    <!-- Portal Girişi Modal Pəncərəsi -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-primary fw-bold">Portal Girişi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Giriş Növünü Seçin</label>
+                        <select id="userRole" class="form-select" onchange="toggleRoleForm()">
+                            <option value="muellim">Müəllim Girişi</option>
+                            <option value="valideyn">Valideyn Girişi (Tezliklə)</option>
+                        </select>
+                    </div>
+
+                    <!-- Müəllim Login Formu -->
+                    <div id="muellimLoginForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">İstifadəçi adı (Login)</label>
+                            <input type="text" id="loginInput" class="form-control" placeholder="Login">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Şifrə (Parol)</label>
+                            <input type="password" id="parolInput" class="form-control" placeholder="••••••••">
+                        </div>
+                        <button class="btn btn-primary w-100 py-2" onclick="login()">Müəllim kimi daxil ol</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
