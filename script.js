@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby42gr2Ancb3xeOY4LJyO7CqFn5juKOVdye3IJh36OimQD-Onap5fKGvlhe3OS57j3rbg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi7cwgdVWN_09K1NzEP4gltKuDKfQKpGkbk1NUbghRGvdlMSKmWrUtf5E9tCfsJUBQCw/exec";
 let currentMuellim = {};
 let currentLesson = {};
 let studentsData = [];
