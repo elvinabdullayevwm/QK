@@ -1,4 +1,5 @@
 
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9NXQGYiTGbeQauEAIskkoZMIO6J38sGSPlJzPYvSEtu8S9W9nC2C4O8aYy1aJQBW1wQ/exec"; // Öz Google Apps Script Web App linkini bura yaz
 let currentMuellim = {};
 let currentLesson = {};
@@ -6,38 +7,58 @@ let studentsData = [];
 let currentStep = 1;
 
 function login() {
-    let lInput = document.getElementById('loginInput');
-    let pInput = document.getElementById('parolInput');
+    let lInput = document.getElementById('modalLoginInput');
+    let pInput = document.getElementById('modalParolInput');
     
-    if (!lInput || !pInput) return;
+    if (!lInput || !pInput) {
+        alert("Giriş xanaları tapılmadı!");
+        return;
+    }
     
-    let l = lInput.value;
-    let p = pInput.value;
+    let l = lInput.value.trim();
+    let p = pInput.value.trim();
     
-    fetch(`${SCRIPT_URL}?action=login&login=${l}&parol=${p}`)
+    if(!l || !p) {
+        alert("Zəhmət olmasa login və şifrəni daxil edin!");
+        return;
+    }
+    
+    fetch(`${SCRIPT_URL}?action=login&login=${encodeURIComponent(l)}&parol=${encodeURIComponent(p)}`)
     .then(res => res.json())
     .then(data => {
         if(data.status === "success") {
             currentMuellim = data;
             
-            // Elementlərin olub- olmadığını yoxlayaraq dəyər veririk
+            // Ana səhifə bölmələrini gizlədirik
+            let heroSection = document.getElementById('hero');
+            let newsSection = document.getElementById('news');
+            let aboutSection = document.getElementById('about');
+            let registerSection = document.getElementById('register');
+            let contactSection = document.getElementById('contact');
+            
+            if(heroSection) heroSection.style.display = 'none';
+            if(newsSection) newsSection.style.display = 'none';
+            if(aboutSection) aboutSection.style.display = 'none';
+            if(registerSection) registerSection.style.display = 'none';
+            if(contactSection) contactSection.style.display = 'none';
+
             let mAdi = document.getElementById('muellimAdi');
             let mFenn = document.getElementById('muellimFenn');
             let hAd = document.getElementById('headerMuellimAd');
             let hFenn = document.getElementById('headerMuellimFenn');
             let uHeader = document.getElementById('userInfoHeader');
-            let loginScreen = document.getElementById('loginScreen');
             let dashScreen = document.getElementById('dashboardScreen');
+            let navLoginBtn = document.getElementById('navLoginBtnContainer');
             
             if(mAdi) mAdi.innerText = data.ad;
             if(mFenn) mFenn.innerText = data.fenn;
             if(hAd) hAd.innerText = data.ad;
             if(hFenn) hFenn.innerText = data.fenn;
             if(uHeader) uHeader.style.display = 'block';
-            if(loginScreen) loginScreen.style.display = 'none';
+            if(navLoginBtn) navLoginBtn.style.display = 'none';
             if(dashScreen) dashScreen.style.display = 'block';
             
-            // Modalı bağlayırıq (əgər açıqdısa)
+            // Modalı bağlayırıq
             let modalEl = document.getElementById('loginModal');
             if(modalEl) {
                 let modal = bootstrap.Modal.getInstance(modalEl);
@@ -79,7 +100,7 @@ function loadSchedule() {
 
             container.innerHTML += `
                 <div class="col-md-4 mb-3">
-                    <div class="card p-3 schedule-card bg-white">
+                    <div class="card p-3 schedule-card bg-white shadow-sm">
                         <h6 class="text-primary fw-bold">Fənn: ${d.fenn}</h6>
                         <p class="mb-2 text-secondary"><b>Saat:</b> ${displaySaat}</p>
                         <button class="btn btn-outline-primary btn-sm w-100" onclick='startLesson(${JSON.stringify(d)})'>Dərsə Start Ver</button>
@@ -119,9 +140,15 @@ function backToDashboard() {
     if(lessonScreen) lessonScreen.style.display = 'none';
     if(dashScreen) dashScreen.style.display = 'block';
     currentStep = 1;
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.step').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
     let step1 = document.getElementById('step1');
-    if(step1) step1.classList.add('active');
+    if(step1) {
+        step1.classList.add('active');
+        step1.style.display = 'block';
+    }
 }
 
 function renderStudentsLists() {
@@ -181,18 +208,30 @@ function renderStudentsLists() {
 
 function nextStep() {
     let currentStepEl = document.getElementById(`step${currentStep}`);
-    if(currentStepEl) currentStepEl.classList.remove('active');
+    if(currentStepEl) {
+        currentStepEl.classList.remove('active');
+        currentStepEl.style.display = 'none';
+    }
     currentStep++;
     let nextStepEl = document.getElementById(`step${currentStep}`);
-    if(nextStepEl) nextStepEl.classList.add('active');
+    if(nextStepEl) {
+        nextStepEl.classList.add('active');
+        nextStepEl.style.display = 'block';
+    }
 }
 
 function prevStep() {
     let currentStepEl = document.getElementById(`step${currentStep}`);
-    if(currentStepEl) currentStepEl.classList.remove('active');
+    if(currentStepEl) {
+        currentStepEl.classList.remove('active');
+        currentStepEl.style.display = 'none';
+    }
     currentStep--;
     let prevStepEl = document.getElementById(`step${currentStep}`);
-    if(prevStepEl) prevStepEl.classList.add('active');
+    if(prevStepEl) {
+        prevStepEl.classList.add('active');
+        prevStepEl.style.display = 'block';
+    }
 }
 
 function finishLesson() {
@@ -254,11 +293,12 @@ function finishLesson() {
 function handleRegister(event) {
     event.preventDefault();
     
+    let inputs = event.target.querySelectorAll('input, select');
     let payload = {
         action: "register",
-        adSoyad: event.target.querySelector('input[type="text"]').value,
-        sinif: event.target.querySelector('select').value,
-        telefon: event.target.querySelector('input[type="tel"]').value
+        adSoyad: inputs[0].value,
+        sinif: inputs[1].value,
+        telefon: inputs[2].value
     };
 
     fetch(SCRIPT_URL, {
